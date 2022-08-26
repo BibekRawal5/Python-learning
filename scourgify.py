@@ -11,17 +11,17 @@ if not sys.argv[1].endswith(".csv") or not sys.argv[2].endswith(".csv"):
 
 try:
     file_read = open(sys.argv[1])
-    file_write = open(sys.argv[2], "w")
+    file_write = open(sys.argv[2], "w", newline='')
 except FileNotFoundError:
     print("File not found for taking data")
     sys.exit()
 else:
     reader = csv.DictReader(file_read)
     writer = csv.DictWriter(file_write, fieldnames = ["First", "Last", "House"])
-    writer.writerow({"First": "first", "Last": "last", "House": "house"})
+    writer.writeheader()
     for row in reader:
         last, first = row["name"].split(", ")
-        writer.writerow({"First": first, "Last": last, "House": row["house"]})
+        writer.writerow({"First": first, "Last": last, "House": row["house"].strip()})
     file_read.close()
     file_write.close()
     
