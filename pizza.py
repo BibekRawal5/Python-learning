@@ -12,13 +12,13 @@ elif len(sys.argv) > 2:
 menu = []
 if sys.argv[1].endswith(".csv"):
     with open(sys.argv[1]) as file:
-        reader = csv.DictReader(file)
+        reader = csv.reader(file)
         for row in reader:
-            menu.append({"Pizza": row["Pizza"], "Small": row["Small"], "Large": row["Large"]})
+            menu.append([row[0], row[1], row[2]])
 
 else:
     print("Enter a valid csv file")
     sys.exit()
 
-print(tabulate(menu, headers = "keys", tablefmt = "grid"))
+print(tabulate(menu,tablefmt = "grid"))
 # print(menu)
