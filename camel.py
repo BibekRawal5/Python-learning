@@ -6,9 +6,7 @@ def main():
 def convert(cam):
     for i in cam:
         if i.isupper():
-            print(i)
             cam = cam.replace(i, f"_{i.lower()}")
-            print(cam)
     return cam
         
 if __name__ == "__main__":
