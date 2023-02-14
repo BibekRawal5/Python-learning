@@ -56,7 +56,7 @@ def main():
     if len(sys.argv) > 2:
         sys.exit("Usage: python degrees.py [directory]")
     directory = sys.argv[1] if len(sys.argv) == 2 else "large"
-
+    
     # Load data from files into memory
     print("Loading data...")
     load_data(directory)
@@ -91,9 +91,33 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
-
-    # TODO
-    raise NotImplementedError
+    frontier = StackFrontier()
+    person_explored = []
+    
+    frontier.add(Node(state=source, parent=None, action=None))
+    
+    while True:
+        # print( "len =" ,frontier.len())
+        if frontier.empty():
+            return None
+        
+        node = frontier.remove()
+        # print("State = ", node.state)
+        
+        if node.state == target:
+            path = []
+            while node.parent is not None:
+                path.append((node.action, node.state)) 
+                node = node.parent    
+            return path
+        
+        person_explored.append(node.state)
+        
+        for neighbour in neighbors_for_person(node.state):
+            movie_id, person_id = neighbour 
+            if not frontier.contains_state(person_id) and person_id not in person_explored:
+                frontier.add(Node(person_id, node, movie_id))
+        
 
 
 def person_id_for_name(name):
