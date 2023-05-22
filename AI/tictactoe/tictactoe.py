@@ -3,12 +3,17 @@ Tic Tac Toe Player
 """
 
 import math
+import copy
 
 X = "X"
 O = "O"
 EMPTY = None
 
-
+WINNING_SET = [
+        [(0,0),(0,1),(0,2)], [(1,0),(1,1),(1,2)], [(2,0),(2,1),(2,2)],
+        [(0,0),(1,0),(2,0)], [(0,1),(1,1),(2,1)], [(0,2),(1,2),(2,2)],
+        [(0,0),(1,1),(2,2)], [(2,0),(1,1),(0,2)]
+        ]
 
 def initial_state():
     """
@@ -41,12 +46,12 @@ def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board.
     """
-    i,j
-    available = []
+    i,j = 0,0
+    available = set()
     for i in range(3):
         for j in range(3):
             if board[i][j] == EMPTY:
-                available.append((i,j))
+                available.add((i,j))
 
     return available
 
@@ -54,7 +59,10 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    new_board = board.copy()
+    if action not in actions(board):
+        raise Exception("Invalid Action!!!")
+    
+    new_board = copy.deepcopy(board)
     i,j = action
     new_board[i][j] = player(board)
     return new_board
@@ -64,14 +72,9 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    WINING_SET = [
-        [(0,0),(0,1),(0,2)], [(1,0),(1,1),(1,2)], [(2,0),(2,1),(2,2)],
-        [(0,0),(1,0),(2,0)], [(0,1),(1,1),(2,1)], [(0,2),(1,2),(2,2)],
-        [(0,0),(1,1),(2,2)], [(2,0),(1,1),(0,2)]
-        ]
     
     while True:
-        for aset in WINING_SET:
+        for aset in WINNING_SET:
             sum_x = 0
             sum_o = 0
             for tup in aset:
@@ -121,5 +124,49 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    raise NotImplementedError
-
+    if terminal(board):
+        return None
+    
+    Max = float('-inf')
+    Min = float('inf')
+    
+    if player(board) == X:
+       return max_play(board, Max, Min)[1]
+    
+    else:
+        return min_play(board, Max, Min)[1]        
+    
+def max_play(board, Max, Min):
+    move = None
+    if terminal(board):
+        return [utility(board), None]
+    
+    value = float('-inf')
+    for action in actions(board):
+        test= min_play(result(board, action), Max, Min)[0]
+        Max = max(Max, test)
+        if test > value:
+            value = test
+            move = action
+            
+        if Max >= Min:
+            break
+        
+    return [value, move]
+    
+def min_play(board, Max, Min):
+    move = None
+    if terminal(board):
+        return [utility(board), None]
+    value = float('+inf')
+    for action in actions(board):
+        test = max_play(result(board, action), Max, Min)[0]
+        Min = min(Min, test)
+        if test < value:
+            value = test
+            move = action
+        
+        if Max >= Min:
+            break
+        
+    return[value, move]
